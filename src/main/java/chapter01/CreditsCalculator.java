@@ -27,8 +27,6 @@ public class CreditsCalculator {
     ArrayList<HashMap<String, Integer>> performances =
         (ArrayList<HashMap<String, java.lang.Integer>>) invoices.get("performances");
     for (HashMap<String, Integer> perf : performances) {
-      int thisAmount = amountFor(perf, playFor(perf));
-
       //  add volume credits
       volumeCredits += Math.max(perf.get("audience") - 30, 0);
       // add extra credit for every ten comedy attendees
@@ -39,18 +37,18 @@ public class CreditsCalculator {
       result.append(
           String.format(
               " %s :  $%d %d seats\n",
-              playFor(perf).get("name"), thisAmount / 100, perf.get("audience")));
-      totalAmount += thisAmount;
+              playFor(perf).get("name"), amountFor(perf) / 100, perf.get("audience")));
+      totalAmount += amountFor(perf);
     }
     result.append("Amount owed is $" + (totalAmount / 100) + "\n");
     result.append("You earned " + volumeCredits + " credits\n");
     return result.toString();
   }
 
-  public int amountFor(HashMap<String, Integer> aPerformance, HashMap<String, String> play) {
+  public int amountFor(HashMap<String, Integer> aPerformance) {
     int result = 0;
 
-    switch (play.get("type")) {
+    switch (playFor(aPerformance).get("type")) {
       case "tragedy":
         result = 40000;
         if (aPerformance.get("audience") > 30) {
@@ -65,7 +63,7 @@ public class CreditsCalculator {
         result += 300 * aPerformance.get("audience");
         break;
       default:
-        throw new RuntimeException("unknown type : " + play.get("type"));
+        throw new RuntimeException("unknown type : " + playFor(aPerformance).get("type"));
     }
     return result;
   }

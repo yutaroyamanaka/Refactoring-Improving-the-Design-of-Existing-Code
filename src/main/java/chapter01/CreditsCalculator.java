@@ -27,19 +27,19 @@ public class CreditsCalculator {
     ArrayList<HashMap<String, Integer>> performances =
         (ArrayList<HashMap<String, java.lang.Integer>>) invoices.get("performances");
     for (HashMap<String, Integer> perf : performances) {
-      HashMap<String, String> play = (HashMap<String, String>) plays.get(perf.get("playID"));
-      int thisAmount = amountFor(perf, play);
+      int thisAmount = amountFor(perf, playFor(perf));
 
       //  add volume credits
       volumeCredits += Math.max(perf.get("audience") - 30, 0);
       // add extra credit for every ten comedy attendees
-      if ("comedy" == play.get("type")) {
+      if ("comedy" == playFor(perf).get("type")) {
         volumeCredits += Math.floor(perf.get("audience") / 5);
       }
       // print line for this order
       result.append(
           String.format(
-              " %s :  $%d %d seats\n", play.get("name"), thisAmount / 100, perf.get("audience")));
+              " %s :  $%d %d seats\n",
+              playFor(perf).get("name"), thisAmount / 100, perf.get("audience")));
       totalAmount += thisAmount;
     }
     result.append("Amount owed is $" + (totalAmount / 100) + "\n");
@@ -68,5 +68,9 @@ public class CreditsCalculator {
         throw new RuntimeException("unknown type : " + play.get("type"));
     }
     return result;
+  }
+
+  public HashMap<String, String> playFor(HashMap<String, Integer> aPerformance) {
+    return (HashMap<String, String>) plays.get(aPerformance.get("playID"));
   }
 }

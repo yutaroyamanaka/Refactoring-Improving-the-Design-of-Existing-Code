@@ -27,12 +27,8 @@ public class CreditsCalculator {
     ArrayList<HashMap<String, Integer>> performances =
         (ArrayList<HashMap<String, java.lang.Integer>>) invoices.get("performances");
     for (HashMap<String, Integer> perf : performances) {
-      //  add volume credits
-      volumeCredits += Math.max(perf.get("audience") - 30, 0);
-      // add extra credit for every ten comedy attendees
-      if ("comedy" == playFor(perf).get("type")) {
-        volumeCredits += Math.floor(perf.get("audience") / 5);
-      }
+      volumeCredits += volumeCreditsFor(perf);
+
       // print line for this order
       result.append(
           String.format(
@@ -70,5 +66,14 @@ public class CreditsCalculator {
 
   public HashMap<String, String> playFor(HashMap<String, Integer> aPerformance) {
     return (HashMap<String, String>) plays.get(aPerformance.get("playID"));
+  }
+
+  public int volumeCreditsFor(HashMap<String, Integer> perf) {
+    int volumeCredits = 0;
+    volumeCredits += Math.max(perf.get("audience") - 30, 0);
+    if ("comedy" == playFor(perf).get("type")) {
+      volumeCredits += Math.floor(perf.get("audience") / 5);
+    }
+    return volumeCredits;
   }
 }

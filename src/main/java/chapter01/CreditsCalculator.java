@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class CreditsCalculator {
   private HashMap plays;
@@ -32,12 +34,12 @@ public class CreditsCalculator {
       // print line for this order
       result.append(
           String.format(
-              " %s :  $%d %d seats\n",
-              playFor(perf).get("name"), amountFor(perf) / 100, perf.get("audience")));
+              " %s :  %s %d seats\n",
+              playFor(perf).get("name"), usd(amountFor(perf)), perf.get("audience")));
       totalAmount += amountFor(perf);
     }
-    result.append("Amount owed is $" + (totalAmount / 100) + "\n");
-    result.append("You earned " + volumeCredits + " credits\n");
+    result.append(String.format("Amount owed is %s\n", usd(totalAmount)));
+    result.append(String.format("You earned %d credits\n", volumeCredits));
     return result.toString();
   }
 
@@ -75,5 +77,11 @@ public class CreditsCalculator {
       volumeCredits += Math.floor(perf.get("audience") / 5);
     }
     return volumeCredits;
+  }
+
+  public String usd(int aNumber) {
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
+    numberFormat.setMinimumFractionDigits(2);
+    return numberFormat.format(aNumber/100);
   }
 }

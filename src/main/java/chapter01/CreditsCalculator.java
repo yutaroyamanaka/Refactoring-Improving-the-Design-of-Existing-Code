@@ -22,15 +22,11 @@ public class CreditsCalculator {
 
   public String statement() {
     int totalAmount = 0;
-    int volumeCredits = 0;
     StringBuilder result =
         new StringBuilder("Statement for " + (String) invoices.get("customer") + "\n");
 
-    ArrayList<HashMap<String, Integer>> performances =
-        (ArrayList<HashMap<String, java.lang.Integer>>) invoices.get("performances");
-    for (HashMap<String, Integer> perf : performances) {
-      volumeCredits += volumeCreditsFor(perf);
-
+    for (HashMap<String, Integer> perf :
+        (ArrayList<HashMap<String, Integer>>) invoices.get("performances")) {
       // print line for this order
       result.append(
           String.format(
@@ -39,7 +35,7 @@ public class CreditsCalculator {
       totalAmount += amountFor(perf);
     }
     result.append(String.format("Amount owed is %s\n", usd(totalAmount)));
-    result.append(String.format("You earned %d credits\n", volumeCredits));
+    result.append(String.format("You earned %d credits\n", totalVolumeCredits()));
     return result.toString();
   }
 
@@ -66,6 +62,15 @@ public class CreditsCalculator {
     return result;
   }
 
+  public int totalVolumeCredits() {
+    int volumeCredits = 0;
+    for (HashMap<String, Integer> perf :
+        (ArrayList<HashMap<String, Integer>>) invoices.get("performances")) {
+      volumeCredits += volumeCreditsFor(perf);
+    }
+    return volumeCredits;
+  }
+
   public HashMap<String, String> playFor(HashMap<String, Integer> aPerformance) {
     return (HashMap<String, String>) plays.get(aPerformance.get("playID"));
   }
@@ -82,6 +87,6 @@ public class CreditsCalculator {
   public String usd(int aNumber) {
     NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
     numberFormat.setMinimumFractionDigits(2);
-    return numberFormat.format(aNumber/100);
+    return numberFormat.format(aNumber / 100);
   }
 }

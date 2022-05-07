@@ -21,7 +21,6 @@ public class CreditsCalculator {
   }
 
   public String statement() {
-    int totalAmount = 0;
     StringBuilder result =
         new StringBuilder("Statement for " + (String) invoices.get("customer") + "\n");
 
@@ -32,9 +31,8 @@ public class CreditsCalculator {
           String.format(
               " %s :  %s %d seats\n",
               playFor(perf).get("name"), usd(amountFor(perf)), perf.get("audience")));
-      totalAmount += amountFor(perf);
     }
-    result.append(String.format("Amount owed is %s\n", usd(totalAmount)));
+    result.append(String.format("Amount owed is %s\n", usd(totalAmount())));
     result.append(String.format("You earned %d credits\n", totalVolumeCredits()));
     return result.toString();
   }
@@ -62,13 +60,22 @@ public class CreditsCalculator {
     return result;
   }
 
-  public int totalVolumeCredits() {
-    int volumeCredits = 0;
+  public int totalAmount() {
+    int result = 0;
     for (HashMap<String, Integer> perf :
         (ArrayList<HashMap<String, Integer>>) invoices.get("performances")) {
-      volumeCredits += volumeCreditsFor(perf);
+      result += amountFor(perf);
     }
-    return volumeCredits;
+    return result;
+  }
+
+  public int totalVolumeCredits() {
+    int result = 0;
+    for (HashMap<String, Integer> perf :
+        (ArrayList<HashMap<String, Integer>>) invoices.get("performances")) {
+      result += volumeCreditsFor(perf);
+    }
+    return result;
   }
 
   public HashMap<String, String> playFor(HashMap<String, Integer> aPerformance) {
